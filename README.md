@@ -1,1 +1,1 @@
-# AirBnB_clone_v2
+Readme for airbnb clone mysql
