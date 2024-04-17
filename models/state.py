@@ -1,32 +1,29 @@
 #!/usr/bin/python3
 """ State Module for HBNB project """
+from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import BaseModel, Base
-from models import storage_type
-from models.city import City
-from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, DateTime, Integer
 
 
 class State(BaseModel, Base):
-    """ State class / table model"""
-    __tablename__ = 'states'
-    if storage_type == 'db':
-        name = Column(String(128), nullable=False)
-        cities = relationship('City', backref='state',
-                              cascade='all, delete, delete-orphan')
-    else:
-        name = ''
+    """ State class """
+    __tablename__ = "states"
+    name = Column(String(128), nullable=False)
+    cities = relationship("City", cascade='all,\
+                           delete-orphan', backref="state")
 
-        @property
-        def cities(self):
-            '''returns the list of City instances with state_id
-                equals the current State.id
-                FileStorage relationship between State and City
-            '''
-            from models import storage
-            related_cities = []
-            cities = storage.all(City)
-            for city in cities.values():
-                if city.state_id == self.id:
-                    related_cities.append(city)
-            return related_cities
+    @property
+    def cities(self):
+        bulk = models.storage.all()
+        elist = []
+        result = []
+        for k in bulk:
+            city = k.replace('.', ' ')
+            city = shlex.split(city)
+            if (city[0] == 'city'):
+                elist.append(bulk[k])
+        for el in elist:
+            if (el.state_id == self.id):
+                result.append(el)
+        return result
